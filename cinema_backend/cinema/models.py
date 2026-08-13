@@ -19,7 +19,7 @@ class Status (models.TextChoices):
         CONFIRMED = "CONFIRMED", "Confirmado"
         CANCELLED = "CANCELLED", "Cancelado"
 
-class Reservation(models.Model):
+class Reservations(models.Model):
     shows = models.ForeignKey(Shows, on_delete=models.PROTECT, related_name="shows")
     customer_name = models.CharField(max_length=120)
     seats = models.IntegerField(

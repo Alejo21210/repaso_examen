@@ -1,0 +1,56 @@
+import { useEffect, useState } from "react";
+import { Container, Paper, Typography, Button, Stack, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
+import { type Reservations, listReservationsPublicApi } from "../api/reservations.api";
+
+export default function PublicReservationsPage() {
+  const [items, setItems] = useState<Reservations[]>([]);
+  const [error, setError] = useState("");
+
+  const load = async () => {
+    try {
+      setError("");
+      const data = await listReservationsPublicApi();
+      setItems(data.results); // DRF paginado
+    } catch {
+      setError("No se pudo cargar la lista pública. ¿Backend encendido?");
+    }
+  };
+
+  useEffect(() => { load(); }, []);
+
+  return (
+    <Container sx={{ mt: 3 }}>
+      <Paper sx={{ p: 3 }}>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+          <Typography variant="h5">Lista de Reservas (Público)</Typography>
+          <Button variant="outlined" onClick={load}>Refrescar</Button>
+        </Stack>
+
+        {error && <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>}
+
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell>Show</TableCell>
+              <TableCell>Custom Name</TableCell>
+              <TableCell>Seats</TableCell>
+              <TableCell>Status</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {items.map((r) => (
+              <TableRow key={r.id}>
+                <TableCell>{r.id}</TableCell>
+                <TableCell>{r.shows_movie_title ?? r.shows}</TableCell>
+                <TableCell>{r.customer_name}</TableCell>
+                <TableCell>{r.seats}</TableCell>
+                <TableCell>{r.status}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Paper>
+    </Container>
+  );
+}
